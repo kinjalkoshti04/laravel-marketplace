@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Listing;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -34,6 +35,13 @@ class ListingController extends Controller
             ->get();
 
         return view('listings.show', compact('listing', 'similar'));
+    }
+
+    public function contact(Listing $listing): RedirectResponse
+    {
+        return redirect()->route('listings.show', $listing)
+            ->with('reveal_phone', true)
+            ->withFragment('seller');
     }
 
     /**

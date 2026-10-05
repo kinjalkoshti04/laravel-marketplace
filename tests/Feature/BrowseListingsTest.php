@@ -94,6 +94,26 @@ class BrowseListingsTest extends TestCase
         $this->assertSame(1, $listing->fresh()->views_count);
     }
 
+    public function test_guest_returns_to_the_ad_with_phone_shown_after_login(): void
+    {
+        $listing = Listing::where('title', 'Swift in Mumbai')->firstOrFail();
+        $listing->user->update(['phone' => '9876543210']);
+        $buyer = User::factory()->create();
+
+        $this->get(route('listings.contact', $listing))->assertRedirect(route('login'));
+
+        $this->post('/login', ['email' => $buyer->email, 'password' => 'password'])
+            ->assertRedirect(route('listings.contact', $listing));
+
+        $this->get(route('listings.contact', $listing))
+            ->assertRedirect(route('listings.show', $listing).'#seller');
+
+        $this->get(route('listings.show', $listing))
+            ->assertOk()
+            ->assertSee('9876543210')
+            ->assertSee('show: true', false);
+    }
+
     public function test_sold_listing_is_viewable_but_marked(): void
     {
         $listing = Listing::where('title', 'Sold Honda City')->firstOrFail();

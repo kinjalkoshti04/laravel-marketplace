@@ -35,6 +35,9 @@ Route::prefix('ajax')->name('ajax.')->controller(AjaxController::class)->group(f
 Route::get('/dashboard', DashboardController::class)->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    // Guests are sent to login first and come back to the ad with the phone shown.
+    Route::get('/listing/{listing}/contact', [ListingController::class, 'contact'])->name('listings.contact');
+
     Route::prefix('dashboard')->group(function () {
         Route::resource('listings', MyListingController::class)->except('show')->names('my-listings');
     });

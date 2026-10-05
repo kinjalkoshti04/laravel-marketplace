@@ -84,7 +84,7 @@
                     <p class="mt-1 text-xs text-gray-400">{{ number_format($listing->views_count) }} views · Ad ID {{ $listing->id }}</p>
                 </div>
 
-                <div class="rounded-lg border border-gray-200 bg-white p-6">
+                <div id="seller" class="rounded-lg border border-gray-200 bg-white p-6">
                     <h2 class="text-sm font-semibold uppercase tracking-wide text-gray-500">Seller</h2>
                     <div class="mt-3 flex items-center gap-3">
                         <div class="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-100 text-lg font-bold text-indigo-700">
@@ -102,14 +102,14 @@
                     @else
                         @if ($listing->user->phone)
                             @auth
-                                <div x-data="{ show: false }" class="mt-4">
+                                <div x-data="{ show: @js((bool) session('reveal_phone')) }" class="mt-4">
                                     <button type="button" x-show="!show" @click="show = true"
                                             class="w-full rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700">Show phone number</button>
                                     <a x-show="show" x-cloak href="tel:{{ $listing->user->phone }}"
                                        class="block rounded-md border border-indigo-600 px-4 py-2 text-center text-sm font-semibold text-indigo-700">📞 {{ $listing->user->phone }}</a>
                                 </div>
                             @else
-                                <a href="{{ route('login') }}"
+                                <a href="{{ route('listings.contact', $listing) }}"
                                    class="mt-4 block rounded-md bg-indigo-600 px-4 py-2 text-center text-sm font-semibold text-white hover:bg-indigo-700">Log in to see phone number</a>
                             @endauth
                         @endif

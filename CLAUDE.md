@@ -59,6 +59,7 @@ Final pass done:
 - Full browser test (puppeteer + Edge, 94 checks, guest + new user flows, verified against MySQL): all pass, no JS errors or 500s
 - Bugs found and fixed: removing the cover photo while uploading a new one made the new upload the cover; "Log in to see phone number" now returns to the ad (`/listing/{slug}/contact`, auth route) with the phone shown
 - Deleting an account also deletes the user's photo files and upload folders (User model `deleting`/`deleted` events), soft-deleted ads included
-- 52 PHPUnit tests passing
+- Login/register: browser validation off (`novalidate`), jQuery Validation instead (`resources/js/auth-validation.js`, separate Vite entry); strong passwords via `Password::defaults()` in AppServiceProvider; live checklist, strength meter, show/hide, suggest password; `RegistrationValidationTest`
+- 65 PHPUnit tests passing (demo users keep `password`: login does not check strength)
 
 Remaining (optional): push to GitHub when the user asks (no remote yet).

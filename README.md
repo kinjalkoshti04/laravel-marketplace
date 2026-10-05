@@ -18,6 +18,8 @@ Built with **Laravel 12**, **Breeze (Blade + Tailwind + Alpine.js)** and **MySQL
 | City + category-wise listings | `/city/{city}/{category}`, e.g. `/city/mumbai/vehicles` |
 | Listing detail page | `/listing/{slug}` |
 
+Login and register are validated in the browser with **jQuery Validation** (no browser popups) and again by **Laravel** on the server. Passwords must be strong (8+ characters, upper and lowercase letters, a number and a symbol), and the register form shows a live checklist, a strength meter and a "suggest a strong password" button.
+
 Extras: My Listings (edit, mark as sold or inactive, delete), dashboard stats, similar ads, view counter, photo gallery, Indian price formatting (₹ 5,00,000), mobile-friendly layout, 46 feature tests.
 
 ## Setup
@@ -170,6 +172,7 @@ erDiagram
 - **Slugs in public URLs.** Listing slugs get a random suffix (`honda-city-zx-2018-cvt-sjvbsz`), so they stay unique without an extra query and don't change when the title is edited.
 - **Authorization with `ListingPolicy`.** Only the owner can edit or delete. Inactive listings return 404 to everyone else, while sold listings stay visible with a "sold" notice.
 - **Soft deletes** on listings, so a deleted ad could be restored.
+- **Validation in two layers.** jQuery Validation (`resources/js/auth-validation.js`, loaded only on the login and register pages) gives instant feedback; Laravel validates everything again, because browser checks can be bypassed. The strong password rule is set once with `Password::defaults()` in `AppServiceProvider`, so register, reset password and change password all enforce it.
 - **No N+1 queries.** Listing cards eager-load the cover photo, city, area and subcategory through `Listing::withCardData()`.
 
 ## Project structure (main files)

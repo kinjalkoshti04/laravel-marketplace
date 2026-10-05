@@ -41,7 +41,15 @@ Day 1 done:
 - Navigation works for guests (Log in / Register links)
 - HomePageTest; register/login checked in the browser
 
-Next (Day 2): the card/category/city links already point to `/listing/{slug}`, `/category/{slug}`, `/city/{slug}` and return 404 until those routes exist.
-1. Listing create/edit form (Form Requests that check the category and location hierarchy, image upload) + AJAX dropdown endpoints
-2. My Listings (`/dashboard/listings`, ListingPolicy)
-3. Browse pages (category, city, city + category) and the listing detail page
+Day 2 done:
+- Listing form (`my-listings/_form.blade.php` + Alpine `resources/js/listing-form.js`): dependent dropdowns via `/ajax/*`, restores old input/edit values, photo previews
+- `StoreListingRequest` / `UpdateListingRequest`: each id must belong to its parent (subcategory→category, state→country, city→state, area→city); max 5 photos counting existing ones
+- My Listings (`/dashboard/listings`, `MyListingController`, `ListingPolicy`): status tabs, edit (status, remove photos), soft delete
+- Browse (`BrowseController`, one view for /listings, /category, /city, /city/{city}/{category}): search, price filter, sort, category/city facets with counts
+- Detail page (`ListingController@show`): gallery, seller, phone for logged-in users, similar ads, view count once per session; inactive ads 404 for non-owners
+- Dashboard with stats; prices use Indian digit grouping (`Listing::indianNumber`, no intl extension here)
+- `ListingFactory` (needs Category + Location seeders); 46 tests passing; checked in a real browser with puppeteer
+
+Next (Day 3):
+1. README: setup steps, demo login, screenshots, ER diagram, design decisions
+2. Final UI polish / review, small commits

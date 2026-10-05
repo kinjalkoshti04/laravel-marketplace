@@ -1,5 +1,6 @@
 <x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
+    {{-- novalidate: jQuery Validation shows the messages instead of the browser popups --}}
+    <form method="POST" action="{{ route('register') }}" data-validate="register" novalidate>
         @csrf
 
         <!-- Name -->
@@ -26,14 +27,51 @@
 
         <!-- Password -->
         <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+            <div class="flex items-center justify-between">
+                <x-input-label for="password" :value="__('Password')" />
+                <button type="button" id="toggle-password" aria-pressed="false" aria-controls="password"
+                        class="text-xs font-medium text-indigo-600 hover:underline">{{ __('Show') }}</button>
+            </div>
 
             <x-text-input id="password" class="block mt-1 w-full"
                             type="password"
                             name="password"
-                            required autocomplete="new-password" />
+                            required autocomplete="new-password" aria-describedby="password-help" />
 
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
+
+            <div id="password-help" class="mt-2 rounded-md bg-gray-50 p-3 text-sm">
+                <div id="password-strength" class="mb-2 hidden" aria-live="polite">
+                    <div class="h-1.5 w-full rounded-full bg-gray-200">
+                        <div data-bar class="h-1.5 rounded-full"></div>
+                    </div>
+                    <p class="mt-1 text-xs text-gray-600">{{ __('Strength:') }} <span data-label class="font-semibold"></span></p>
+                </div>
+
+                <p class="font-medium text-gray-700">{{ __('Your password must have:') }}</p>
+                <ul class="mt-1 space-y-0.5">
+                    @foreach ([
+                        'length' => __('At least 8 characters'),
+                        'case' => __('Uppercase and lowercase letters (A-z)'),
+                        'number' => __('At least one number (0-9)'),
+                        'symbol' => __('At least one symbol (e.g. ! @ # $ %)'),
+                    ] as $rule => $label)
+                        <li data-rule="{{ $rule }}" class="flex items-center gap-2 text-gray-500">
+                            <span data-icon class="w-4 text-center" aria-hidden="true">○</span>{{ $label }}
+                        </li>
+                    @endforeach
+                </ul>
+
+                <p class="mt-2 text-xs text-gray-500">
+                    {{ __('Tip: a short sentence like "Chai@7pm-daily!" is easy to remember and hard to guess.') }}
+                </p>
+                <button type="button" id="suggest-password" class="mt-2 text-sm font-medium text-indigo-600 hover:underline">
+                    {{ __('Suggest a strong password') }}
+                </button>
+                <p id="suggested-note" class="mt-1 hidden text-xs text-amber-700">
+                    {{ __('Save this password somewhere safe (e.g. your password manager) before registering.') }}
+                </p>
+            </div>
         </div>
 
         <!-- Confirm Password -->
@@ -57,4 +95,6 @@
             </x-primary-button>
         </div>
     </form>
+
+    @vite('resources/js/auth-validation.js')
 </x-guest-layout>

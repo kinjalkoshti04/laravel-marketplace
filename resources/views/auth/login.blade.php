@@ -2,7 +2,8 @@
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
-    <form method="POST" action="{{ route('login') }}">
+    {{-- novalidate: jQuery Validation shows the messages instead of the browser popups --}}
+    <form method="POST" action="{{ route('login') }}" data-validate="login" novalidate>
         @csrf
 
         <!-- Email Address -->
@@ -44,4 +45,6 @@
             </x-primary-button>
         </div>
     </form>
+
+    @vite('resources/js/auth-validation.js')
 </x-guest-layout>

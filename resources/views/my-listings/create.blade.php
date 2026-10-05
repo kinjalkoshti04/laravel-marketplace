@@ -1,4 +1,6 @@
 <x-app-layout>
+    <x-slot:title>Post an ad</x-slot:title>
+
     <x-slot name="header">
         <h2 class="text-xl font-semibold leading-tight text-gray-800">Post an ad</h2>
     </x-slot>

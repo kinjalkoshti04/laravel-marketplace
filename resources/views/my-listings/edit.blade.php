@@ -1,4 +1,6 @@
 <x-app-layout>
+    <x-slot:title>Edit {{ $listing->title }}</x-slot:title>
+
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <h2 class="text-xl font-semibold leading-tight text-gray-800">Edit ad</h2>

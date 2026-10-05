@@ -1,66 +1,191 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Bazaar – OLX-style marketplace in Laravel
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A classifieds marketplace where users register, post products or services with a category and full location (country → state → city → area), and browse listings by category, by city, or by city + category.
 
-## About Laravel
+Built with **Laravel 12**, **Breeze (Blade + Tailwind + Alpine.js)** and **MySQL**.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+![Home page](docs/screenshots/home.png)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Requirements covered
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+| Requirement | Where |
+|---|---|
+| User registration / login | Laravel Breeze: `/register`, `/login` |
+| Add a product/service with name, details, category, subcategory, country, state, city, area, price | `/dashboard/listings/create` (dependent dropdowns, server-side validation, up to 5 photos) |
+| Show listings on the frontend | Home page (latest ads) and `/listings` (search, price filter, sort) |
+| Category-wise listings | `/category/{category}`, e.g. `/category/vehicles` or `/category/cars` (subcategory) |
+| City-wise listings | `/city/{city}`, e.g. `/city/pune` |
+| City + category-wise listings | `/city/{city}/{category}`, e.g. `/city/mumbai/vehicles` |
+| Listing detail page | `/listing/{slug}` |
 
-## Learning Laravel
+Extras: My Listings (edit, mark as sold or inactive, delete), dashboard stats, similar ads, view counter, photo gallery, Indian price formatting (₹ 5,00,000), mobile-friendly layout, 46 feature tests.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Setup
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Requirements: PHP 8.2+ (with `gd`, `pdo_mysql`, `fileinfo`), Composer, Node 18+, MySQL/MariaDB (e.g. XAMPP).
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+git clone <repo-url> bazaar && cd bazaar
+composer install
+npm install && npm run build
 
-## Laravel Sponsors
+cp .env.example .env
+php artisan key:generate
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Create an empty database called `laravel_marketplace`, then check the `DB_*` values in `.env` (default: `root` with no password on port 3306; XAMPP is sometimes set to 3307).
 
-### Premium Partners
+```bash
+php artisan migrate --seed   # tables + categories, locations, 5 demo users, 63 demo listings with photos
+php artisan storage:link     # makes uploaded photos public
+php artisan serve
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+Open http://127.0.0.1:8000. If port 8000 is taken, use `php artisan serve --port=8001` and set `APP_URL=http://127.0.0.1:8001` in `.env` so photo URLs match.
 
-## Contributing
+### Demo accounts
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+All passwords are `password`.
 
-## Code of Conduct
+| Email | Notes |
+|---|---|
+| `demo@example.com` | Main demo account with its own listings |
+| `rahul@example.com`, `priya@example.com`, `arjun@example.com`, `sneha@example.com` | Other sellers |
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Tests
 
-## Security Vulnerabilities
+```bash
+php artisan test
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Tests run on in-memory SQLite (see `phpunit.xml`), so they never touch the MySQL data.
 
-## License
+## Screenshots
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+| Category page | City + category page |
+|---|---|
+| ![Category](docs/screenshots/category.png) | ![City + category](docs/screenshots/city-category.png) |
+
+| Listing detail | Post an ad |
+|---|---|
+| ![Listing detail](docs/screenshots/listing-detail.png) | ![Post an ad](docs/screenshots/post-ad-form.png) |
+
+| My listings | Mobile |
+|---|---|
+| ![My listings](docs/screenshots/my-listings.png) | <img src="docs/screenshots/mobile-home.png" width="260" alt="Mobile home"> |
+
+## Database design
+
+```mermaid
+erDiagram
+    users ||--o{ listings : posts
+    countries ||--o{ states : has
+    states ||--o{ cities : has
+    cities ||--o{ areas : has
+    categories ||--o{ categories : "parent of"
+    listings ||--o{ listing_images : has
+
+    categories ||--o{ listings : "category_id"
+    categories ||--o{ listings : "subcategory_id"
+    countries ||--o{ listings : ""
+    states ||--o{ listings : ""
+    cities ||--o{ listings : ""
+    areas ||--o{ listings : ""
+
+    users {
+        bigint id PK
+        string name
+        string email UK
+        string phone
+        string password
+    }
+    categories {
+        bigint id PK
+        bigint parent_id FK "NULL = category, set = subcategory"
+        string name
+        string slug UK
+        string icon
+        smallint sort_order
+        boolean is_active
+    }
+    countries {
+        bigint id PK
+        string name
+        string iso_code UK
+        string slug UK
+    }
+    states {
+        bigint id PK
+        bigint country_id FK
+        string name
+        string slug
+    }
+    cities {
+        bigint id PK
+        bigint state_id FK
+        string name
+        string slug UK
+        boolean is_popular
+    }
+    areas {
+        bigint id PK
+        bigint city_id FK
+        string name
+        string slug
+    }
+    listings {
+        bigint id PK
+        bigint user_id FK
+        bigint category_id FK
+        bigint subcategory_id FK
+        bigint country_id FK
+        bigint state_id FK
+        bigint city_id FK
+        bigint area_id FK
+        enum type "product | service"
+        string title
+        string slug UK
+        text description
+        decimal price
+        boolean is_negotiable
+        enum status "active | sold | inactive"
+        int views_count
+        timestamp deleted_at "soft deletes"
+    }
+    listing_images {
+        bigint id PK
+        bigint listing_id FK
+        string path
+        tinyint sort_order
+        boolean is_primary
+    }
+```
+
+## Design decisions
+
+- **One self-referencing `categories` table.** `parent_id = NULL` is a category and a set `parent_id` is a subcategory. Both share one slug space, so `/category/{slug}` works for either level, and the `Listing::inCategory()` scope picks the right column.
+- **Separate location tables** (countries → states → cities → areas) instead of free text, so cities and areas are consistent and can be browsed.
+- **The full category and location chain is stored on each listing.** Area alone would be enough to work out the rest, but storing `category_id`, `city_id` and the others means every browse page (category, city, city + category) is a single indexed `WHERE` with no joins. Composite indexes such as `(city_id, category_id, status)` match those queries.
+- **Hierarchy validated on the server.** `StoreListingRequest` checks that the subcategory belongs to the category, the state to the country, the city to the state and the area to the city, so a tampered form cannot save inconsistent data. The dropdowns are only a convenience.
+- **Slugs in public URLs.** Listing slugs get a random suffix (`honda-city-zx-2018-cvt-sjvbsz`), so they stay unique without an extra query and don't change when the title is edited.
+- **Authorization with `ListingPolicy`.** Only the owner can edit or delete. Inactive listings return 404 to everyone else, while sold listings stay visible with a "sold" notice.
+- **Soft deletes** on listings, so a deleted ad could be restored.
+- **No N+1 queries.** Listing cards eager-load the cover photo, city, area and subcategory through `Listing::withCardData()`.
+
+## Project structure (main files)
+
+```
+app/Http/Controllers/
+    HomeController.php        home page
+    BrowseController.php      /listings, /category, /city, /city/{city}/{category}
+    ListingController.php     listing detail page
+    MyListingController.php   create / edit / delete own listings
+    AjaxController.php        JSON for the dependent dropdowns
+app/Http/Requests/            StoreListingRequest, UpdateListingRequest
+app/Policies/ListingPolicy.php
+app/Models/                   Listing, Category, Country, State, City, Area, ListingImage, User
+database/seeders/             CategorySeeder, LocationSeeder, DemoListingSeeder
+resources/js/listing-form.js  Alpine component for the listing form
+resources/views/              home, browse/, listings/, my-listings/
+tests/Feature/                HomePageTest, BrowseListingsTest, ManageListingsTest (+ Breeze auth tests)
+```

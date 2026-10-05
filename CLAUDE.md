@@ -50,6 +50,8 @@ Day 2 done:
 - Dashboard with stats; prices use Indian digit grouping (`Listing::indianNumber`, no intl extension here)
 - `ListingFactory` (needs Category + Location seeders); 46 tests passing; checked in a real browser with puppeteer
 
-Next (Day 3):
-1. README: setup steps, demo login, screenshots, ER diagram, design decisions
-2. Final UI polish / review, small commits
+Day 3 done:
+- Per-page `<title>` via `<x-slot:title>`, indigo primary button, removed unused welcome view
+- README: requirement → URL table, setup, demo accounts, screenshots (`docs/screenshots/`), Mermaid ER diagram, design decisions
+
+Remaining (optional): push to GitHub when the user asks (no remote yet).

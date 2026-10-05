@@ -16,9 +16,15 @@
                     <x-nav-link :href="route('home')" :active="request()->routeIs('home')">
                         {{ __('Home') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('listings.index')" :active="request()->routeIs('listings.index', 'browse.*')">
+                        {{ __('Browse') }}
+                    </x-nav-link>
                     @auth
                         <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                             {{ __('Dashboard') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('my-listings.index')" :active="request()->routeIs('my-listings.*')">
+                            {{ __('My listings') }}
                         </x-nav-link>
                     @endauth
                 </div>
@@ -28,11 +34,13 @@
             @guest
                 <div class="hidden sm:flex sm:items-center sm:ms-6 gap-4 text-sm font-medium">
                     <a href="{{ route('login') }}" class="text-gray-600 hover:text-gray-900">{{ __('Log in') }}</a>
-                    <a href="{{ route('register') }}" class="rounded-md bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700">{{ __('Register') }}</a>
+                    <a href="{{ route('register') }}" class="text-gray-600 hover:text-gray-900">{{ __('Register') }}</a>
+                    <a href="{{ route('my-listings.create') }}" class="rounded-md bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700">+ {{ __('Post an ad') }}</a>
                 </div>
             @endguest
             @auth
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
+            <div class="hidden sm:flex sm:items-center sm:ms-6 gap-4">
+                <a href="{{ route('my-listings.create') }}" class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">+ {{ __('Post an ad') }}</a>
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
@@ -84,11 +92,20 @@
             <x-responsive-nav-link :href="route('home')" :active="request()->routeIs('home')">
                 {{ __('Home') }}
             </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('listings.index')" :active="request()->routeIs('listings.index', 'browse.*')">
+                {{ __('Browse') }}
+            </x-responsive-nav-link>
             @auth
                 <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                     {{ __('Dashboard') }}
                 </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('my-listings.index')" :active="request()->routeIs('my-listings.*')">
+                    {{ __('My listings') }}
+                </x-responsive-nav-link>
             @endauth
+            <x-responsive-nav-link :href="route('my-listings.create')" :active="request()->routeIs('my-listings.create')">
+                + {{ __('Post an ad') }}
+            </x-responsive-nav-link>
         </div>
 
         @guest

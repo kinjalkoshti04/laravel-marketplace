@@ -13,6 +13,7 @@ class HomeController extends Controller
     {
         $categories = Category::topLevel()->active()->get();
         $popularCities = City::popular()->get();
+        $allCities = City::orderBy('name')->get(['name', 'slug']);
 
         $latestListings = Listing::active()
             ->withCardData()
@@ -20,6 +21,6 @@ class HomeController extends Controller
             ->take(16)
             ->get();
 
-        return view('home', compact('categories', 'popularCities', 'latestListings'));
+        return view('home', compact('categories', 'popularCities', 'allCities', 'latestListings'));
     }
 }

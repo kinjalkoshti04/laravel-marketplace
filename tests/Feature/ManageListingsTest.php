@@ -166,6 +166,34 @@ class ManageListingsTest extends TestCase
         $this->assertSoftDeleted($listing);
     }
 
+    public function test_deleting_account_removes_photo_files(): void
+    {
+        $user = User::factory()->create();
+        foreach (['First ad title', 'Second ad title'] as $title) {
+            $this->actingAs($user)->post(route('my-listings.store'), $this->validData([
+                'title' => $title,
+                'images' => [UploadedFile::fake()->image('a.jpg'), UploadedFile::fake()->image('b.jpg')],
+            ]));
+        }
+        [$kept, $softDeleted] = Listing::orderBy('id')->get()->all();
+        $softDeleted->delete();
+
+        $other = Listing::factory()->create();
+        $otherPhoto = $other->images()->create(['path' => UploadedFile::fake()->image('o.jpg')->store("listings/{$other->id}", 'public')]);
+
+        $paths = \App\Models\ListingImage::pluck('path')->diff([$otherPhoto->path])->all();
+        $this->assertCount(4, $paths);
+        Storage::disk('public')->assertExists($paths);
+
+        $this->actingAs($user)->delete('/profile', ['password' => 'password'])->assertRedirect('/');
+
+        $this->assertModelMissing($user);
+        $this->assertDatabaseMissing('listings', ['id' => $kept->id]);
+        Storage::disk('public')->assertMissing($paths);
+        Storage::disk('public')->assertMissing(["listings/{$kept->id}", "listings/{$softDeleted->id}"]);
+        Storage::disk('public')->assertExists($otherPhoto->path); // other users' photos untouched
+    }
+
     public function test_my_listings_only_shows_own_listings(): void
     {
         $user = User::factory()->create();

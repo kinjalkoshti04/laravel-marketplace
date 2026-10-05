@@ -58,6 +58,7 @@ Final pass done:
 - Phone number field on registration and profile (`PhoneNumberTest`)
 - Full browser test (puppeteer + Edge, 94 checks, guest + new user flows, verified against MySQL): all pass, no JS errors or 500s
 - Bugs found and fixed: removing the cover photo while uploading a new one made the new upload the cover; "Log in to see phone number" now returns to the ad (`/listing/{slug}/contact`, auth route) with the phone shown
-- 51 PHPUnit tests passing
+- Deleting an account also deletes the user's photo files and upload folders (User model `deleting`/`deleted` events), soft-deleted ads included
+- 52 PHPUnit tests passing
 
 Remaining (optional): push to GitHub when the user asks (no remote yet).

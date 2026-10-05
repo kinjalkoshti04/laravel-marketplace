@@ -47,6 +47,13 @@
             @endif
         </div>
 
+        <div>
+            <x-input-label for="phone" :value="__('Phone (optional)')" />
+            <x-text-input id="phone" class="block mt-1 w-full" type="tel" name="phone" :value="old('phone', $user->phone)" autocomplete="tel" placeholder="e.g. 9876543210" />
+            <p class="mt-1 text-xs text-gray-500">{{ __('Shown to logged-in buyers on your ads.') }}</p>
+            <x-input-error :messages="$errors->get('phone')" class="mt-2" />
+        </div>
+
         <div class="flex items-center gap-4">
             <x-primary-button>{{ __('Save') }}</x-primary-button>
 

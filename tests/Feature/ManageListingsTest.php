@@ -107,6 +107,26 @@ class ManageListingsTest extends TestCase
         Storage::disk('public')->assertMissing($first->path);
     }
 
+    public function test_remaining_photo_stays_cover_when_cover_is_replaced(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user)->post(route('my-listings.store'), $this->validData([
+            'images' => [UploadedFile::fake()->image('a.jpg'), UploadedFile::fake()->image('b.jpg')],
+        ]));
+        $listing = Listing::firstOrFail();
+        [$cover, $second] = $listing->images->all();
+
+        $this->actingAs($user)->put(route('my-listings.update', $listing), $this->validData([
+            'status' => 'active',
+            'remove_images' => [$cover->id],
+            'images' => [UploadedFile::fake()->image('new.jpg')],
+        ]))->assertSessionHasNoErrors();
+
+        $images = $listing->fresh()->images;
+        $this->assertCount(2, $images);
+        $this->assertSame([$second->id], $images->where('is_primary', true)->pluck('id')->all());
+    }
+
     public function test_photo_limit_counts_existing_photos(): void
     {
         $user = User::factory()->create();

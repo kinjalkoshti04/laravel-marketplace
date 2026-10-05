@@ -78,8 +78,9 @@ class MyListingController extends Controller
             $removed = $listing->images()->whereIn('id', $request->validated('remove_images', []))->get();
             $listing->images()->whereKey($removed->modelKeys())->delete();
 
-            $this->storeImages($listing, $request->file('images', []));
+            // If the cover was removed, a remaining older photo takes over before new uploads are added.
             $this->ensurePrimaryImage($listing);
+            $this->storeImages($listing, $request->file('images', []));
 
             return $removed->pluck('path')->all();
         });

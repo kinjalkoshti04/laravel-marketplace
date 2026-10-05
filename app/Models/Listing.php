@@ -163,7 +163,22 @@ class Listing extends Model
     {
         return Attribute::get(fn () => (float) $this->price == 0.0
             ? 'Free'
-            : '₹ '.number_format((float) $this->price, (float) $this->price == floor((float) $this->price) ? 0 : 2));
+            : '₹ '.self::indianNumber((float) $this->price));
+    }
+
+    /**
+     * Indian digit grouping (12,34,567) without needing the intl extension.
+     */
+    public static function indianNumber(float $amount): string
+    {
+        $decimals = $amount == floor($amount) ? 0 : 2;
+        [$whole, $fraction] = array_pad(explode('.', number_format($amount, $decimals, '.', '')), 2, null);
+
+        $lastThree = substr($whole, -3);
+        $rest = substr($whole, 0, -3);
+        $grouped = $rest === '' ? $lastThree : preg_replace('/\B(?=(\d{2})+$)/', ',', $rest).','.$lastThree;
+
+        return $grouped.($fraction !== null ? '.'.$fraction : '');
     }
 
     protected function locationLabel(): Attribute

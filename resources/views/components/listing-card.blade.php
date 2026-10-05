@@ -1,7 +1,7 @@
 @props(['listing'])
 
 {{-- Listing card used on the home and browse pages. Expects ->withCardData() to be eager loaded. --}}
-<a href="{{ url('/listing/'.$listing->slug) }}"
+<a href="{{ route('listings.show', $listing) }}"
    class="group flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition hover:shadow-md">
     <div class="aspect-[4/3] overflow-hidden bg-gray-100">
         @if ($listing->primaryImage)

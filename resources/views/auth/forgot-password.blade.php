@@ -7,12 +7,12 @@
 
     <x-auth-session-status class="mb-3" :status="session('status')" />
 
-    <form method="POST" action="{{ route('password.email') }}">
+    <form method="POST" action="{{ route('password.email') }}" data-validate="forgot-password" novalidate>
         @csrf
 
         <div class="mb-3">
             <x-input-label for="email" value="Email" />
-            <x-text-input id="email" type="email" name="email" :value="old('email')" required autofocus />
+            <x-text-input id="email" type="email" name="email" :value="old('email')" required maxlength="255" autofocus data-msg-required="Please enter your email address." />
             <x-input-error :messages="$errors->get('email')" />
         </div>
 

@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Models\User;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class ProfileUpdateRequest extends FormRequest
@@ -14,10 +15,18 @@ class ProfileUpdateRequest extends FormRequest
      *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
+    /**
+     * Same normalisation as registration: "Demo@Example.com " is saved as "demo@example.com".
+     */
+    protected function prepareForValidation(): void
+    {
+        $this->merge(['email' => Str::lower(trim((string) $this->input('email')))]);
+    }
+
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'min:2', 'max:255'],
             'email' => [
                 'required',
                 'string',
@@ -32,6 +41,9 @@ class ProfileUpdateRequest extends FormRequest
 
     public function messages(): array
     {
-        return ['phone.regex' => 'Please enter a valid phone number.'];
+        return [
+            'email.unique' => 'This email is already used by another account.',
+            'phone.regex' => 'Please enter a valid phone number.',
+        ];
     }
 }

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\City;
 use App\Models\Listing;
-use Illuminate\Http\Request;
+use App\Http\Requests\BrowseFilterRequest;
 use Illuminate\Support\Collection;
 use Illuminate\View\View;
 
@@ -24,7 +24,7 @@ class BrowseController extends Controller
         'price_desc' => 'Price: high to low',
     ];
 
-    public function index(Request $request): View
+    public function index(BrowseFilterRequest $request): View
     {
         $city = $request->filled('city') ? City::where('slug', $request->query('city'))->first() : null;
         $category = $request->filled('category') ? Category::where('slug', $request->query('category'))->first() : null;
@@ -32,32 +32,33 @@ class BrowseController extends Controller
         return $this->render($request, $city, $category);
     }
 
-    public function category(Request $request, Category $category): View
+    public function category(BrowseFilterRequest $request, Category $category): View
     {
         return $this->render($request, null, $category);
     }
 
-    public function city(Request $request, City $city): View
+    public function city(BrowseFilterRequest $request, City $city): View
     {
         return $this->render($request, $city, null);
     }
 
-    public function cityCategory(Request $request, City $city, Category $category): View
+    public function cityCategory(BrowseFilterRequest $request, City $city, Category $category): View
     {
         return $this->render($request, $city, $category);
     }
 
-    private function render(Request $request, ?City $city, ?Category $category): View
+    private function render(BrowseFilterRequest $request, ?City $city, ?Category $category): View
     {
         abort_if($category && ! $category->is_active, 404);
         $category?->load('parent');
 
-        $sort = array_key_exists($request->query('sort'), self::SORTS) ? $request->query('sort') : 'newest';
+        $filters = $request->validated();
+        $sort = $filters['sort'] ?? 'newest';
 
         $listings = $this->baseQuery($city, $category)
-            ->search($request->query('q'))
-            ->when($request->filled('min_price'), fn ($q) => $q->where('price', '>=', (float) $request->query('min_price')))
-            ->when($request->filled('max_price'), fn ($q) => $q->where('price', '<=', (float) $request->query('max_price')))
+            ->search($filters['q'] ?? null)
+            ->when(isset($filters['min_price']), fn ($q) => $q->where('price', '>=', (float) $filters['min_price']))
+            ->when(isset($filters['max_price']), fn ($q) => $q->where('price', '<=', (float) $filters['max_price']))
             ->withCardData()
             ->when($sort === 'price_asc', fn ($q) => $q->orderBy('price'))
             ->when($sort === 'price_desc', fn ($q) => $q->orderByDesc('price'))
@@ -70,7 +71,7 @@ class BrowseController extends Controller
             'city' => $city,
             'category' => $category,
             'sort' => $sort,
-            'title' => $this->title($city, $category, $request->query('q')),
+            'title' => $this->title($city, $category, $filters['q'] ?? null),
             'categoryFacets' => $this->categoryFacets($city, $category),
             'cityFacets' => $this->cityFacets($city, $category),
         ]);

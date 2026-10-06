@@ -8,7 +8,7 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-8">
-                <form method="POST" action="{{ route('my-listings.store') }}" enctype="multipart/form-data" class="card card-body" id="listing-form">
+                <form method="POST" action="{{ route('my-listings.store') }}" enctype="multipart/form-data" class="card card-body" id="listing-form" data-validate="listing" novalidate>
                     @csrf
 
                     @include('my-listings._form')

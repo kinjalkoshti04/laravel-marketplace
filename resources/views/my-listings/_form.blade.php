@@ -32,6 +32,7 @@
         @foreach (\App\Models\Listing::TYPES as $type)
             <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" name="type" id="type_{{ $type }}" value="{{ $type }}"
+                       required data-msg-required="Please choose product or service."
                        @checked(old('type', $listing->type) === $type)>
                 <label class="form-check-label" for="type_{{ $type }}">{{ ucfirst($type) }}</label>
             </div>
@@ -42,7 +43,7 @@
     <div class="row">
         <div class="col-md-6 mb-3">
             <label for="category_id" class="form-label">Category</label>
-            <select id="category_id" name="category_id" class="form-select" x-model="category" @change="categoryChanged()" required>
+            <select id="category_id" name="category_id" class="form-select" x-model="category" @change="categoryChanged()" required data-msg-required="Please choose a category.">
                 <option value="">Select category</option>
                 @foreach ($categories as $cat)
                     <option value="{{ $cat->id }}" @selected($selected['category'] == $cat->id)>{{ $cat->name }}</option>
@@ -54,7 +55,7 @@
         <div class="col-md-6 mb-3">
             <label for="subcategory_id" class="form-label">Subcategory</label>
             <select id="subcategory_id" name="subcategory_id" class="form-select" x-model="subcategory"
-                    :disabled="!category || loading.subcategories" required>
+                    :disabled="!category || loading.subcategories" required data-msg-required="Please choose a subcategory.">
                 <option value="" x-text="loading.subcategories ? 'Loading...' : 'Select subcategory'"></option>
                 <template x-for="o in subcategories" :key="o.id">
                     <option :value="o.id" x-text="o.name" :selected="o.id == subcategory"></option>
@@ -66,14 +67,15 @@
 
     <div class="mb-3">
         <label for="title" class="form-label">Title</label>
-        <x-text-input id="title" name="title" maxlength="120" required
+        <x-text-input id="title" name="title" minlength="5" maxlength="120" required data-msg-required="Please enter a title." data-msg-minlength="Title must be at least 5 characters." 
                       :value="old('title', $listing->title)" placeholder="e.g. iPhone 13 128GB, excellent condition" />
         <x-input-error :messages="$errors->get('title')" />
     </div>
 
     <div class="mb-3">
         <label for="description" class="form-label">Details</label>
-        <textarea id="description" name="description" rows="5" maxlength="5000" required class="form-control"
+        <textarea id="description" name="description" rows="5" minlength="20" maxlength="5000" required class="form-control"
+                  data-msg-required="Please describe what you are offering." data-msg-minlength="Details must be at least 20 characters."
                   placeholder="Condition, age, features, reason for selling...">{{ old('description', $listing->description) }}</textarea>
         <x-input-error :messages="$errors->get('description')" />
     </div>
@@ -81,7 +83,7 @@
     <div class="row align-items-end">
         <div class="col-md-6 mb-3">
             <label for="price" class="form-label">Price (₹)</label>
-            <x-text-input id="price" name="price" type="number" min="0" step="0.01" required
+            <x-text-input id="price" name="price" type="number" min="0" max="9999999999" step="0.01" required data-msg-required="Please enter a price (0 if free)." data-msg-min="Price cannot be negative." 
                           :value="old('price', $listing->price !== null ? (float) $listing->price : null)" />
             <x-input-error :messages="$errors->get('price')" />
         </div>
@@ -99,7 +101,7 @@
     <div class="row">
         <div class="col-md-6 mb-3">
             <label for="country_id" class="form-label">Country</label>
-            <select id="country_id" name="country_id" class="form-select" x-model="country" @change="countryChanged()" required>
+            <select id="country_id" name="country_id" class="form-select" x-model="country" @change="countryChanged()" required data-msg-required="Please choose a country.">
                 <option value="">Select country</option>
                 @foreach ($countries as $c)
                     <option value="{{ $c->id }}" @selected($selected['country'] == $c->id)>{{ $c->name }}</option>
@@ -117,7 +119,7 @@
                 <label for="{{ $field }}_id" class="form-label">{{ $label }}</label>
                 <select id="{{ $field }}_id" name="{{ $field }}_id" class="form-select" x-model="{{ $field }}"
                         @if ($onChange) @change="{{ $onChange }}" @endif
-                        :disabled="!{{ $parent }} || loading.{{ $list }}" required>
+                        :disabled="!{{ $parent }} || loading.{{ $list }}" required data-msg-required="Please choose {{ $field === 'area' ? 'an' : 'a' }} {{ strtolower($label) }}.">
                     <option value="" x-text="loading.{{ $list }} ? 'Loading...' : 'Select {{ strtolower($label) }}'"></option>
                     <template x-for="o in {{ $list }}" :key="o.id">
                         <option :value="o.id" x-text="o.name" :selected="o.id == {{ $field }}"></option>
@@ -153,6 +155,7 @@
     <div class="mb-3">
         <label for="images" class="form-label">{{ $listing->exists ? 'Add photos' : 'Upload photos' }}</label>
         <input id="images" name="images[]" type="file" multiple accept="image/jpeg,image/png,image/webp"
+               data-rule-filetypes="jpg,jpeg,png,webp" data-rule-maxfilesize="4" data-rule-photolimit="{{ \App\Http\Requests\StoreListingRequest::MAX_IMAGES }}"
                class="form-control @if ($errors->any()) border-warning @endif" @change="previewImages($event)">
         @if ($errors->any())
             <div class="form-text text-warning-emphasis fw-semibold" id="reselect-photos">Please select your photos again before saving.</div>
@@ -175,7 +178,7 @@
     @if ($listing->exists)
         <div class="mb-3">
             <label for="status" class="form-label">Status</label>
-            <select id="status" name="status" class="form-select w-auto">
+            <select id="status" name="status" class="form-select w-auto" required>
                 @foreach (['active' => 'Active (visible to everyone)', 'sold' => 'Sold', 'inactive' => 'Inactive (hidden)'] as $value => $label)
                     <option value="{{ $value }}" @selected(old('status', $listing->status) === $value)>{{ $label }}</option>
                 @endforeach

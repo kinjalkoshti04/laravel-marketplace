@@ -39,17 +39,25 @@
         <div class="row">
             {{-- Filters --}}
             <div class="col-lg-3 mb-4">
-                <form method="GET" class="card card-body mb-3" id="filters">
+                <form method="GET" class="card card-body mb-3" id="filters" data-validate="filters" novalidate>
+                    @if ($errors->any())
+                        <div class="alert alert-danger py-2 small">Some filters were invalid and have been ignored.</div>
+                    @endif
                     <div class="mb-2">
                         <label for="q" class="form-label small mb-1">Search</label>
-                        <input id="q" name="q" value="{{ request('q') }}" class="form-control form-control-sm" placeholder="e.g. iPhone, sofa">
+                        <input id="q" name="q" value="{{ old('q', request('q')) }}" maxlength="100" class="form-control form-control-sm" placeholder="e.g. iPhone, sofa">
+                        <x-input-error :messages="$errors->get('q')" />
                     </div>
                     <div class="mb-2">
-                        <label class="form-label small mb-1">Price (₹)</label>
+                        <label for="min_price" class="form-label small mb-1">Price (₹)</label>
                         <div class="input-group input-group-sm">
-                            <input name="min_price" type="number" min="0" value="{{ request('min_price') }}" class="form-control" placeholder="Min">
-                            <input name="max_price" type="number" min="0" value="{{ request('max_price') }}" class="form-control" placeholder="Max">
+                            <input id="min_price" name="min_price" type="number" min="0" step="any" value="{{ old('min_price', request('min_price')) }}" class="form-control" placeholder="Min"
+                                   data-msg-min="Min price cannot be negative." data-msg-number="Min price must be a number.">
+                            <input id="max_price" name="max_price" type="number" min="0" step="any" value="{{ old('max_price', request('max_price')) }}" class="form-control" placeholder="Max"
+                                   data-rule-notlessthan="#min_price" data-msg-min="Max price cannot be negative." data-msg-number="Max price must be a number.">
                         </div>
+                        <x-input-error :messages="$errors->get('min_price')" />
+                        <x-input-error :messages="$errors->get('max_price')" />
                     </div>
                     <div class="mb-3">
                         <label for="sort" class="form-label small mb-1">Sort by</label>
@@ -58,6 +66,7 @@
                                 <option value="{{ $value }}" @selected($sort === $value)>{{ $label }}</option>
                             @endforeach
                         </select>
+                        <x-input-error :messages="$errors->get('sort')" />
                     </div>
                     {{-- Keep the ?city / ?category filters on the /listings page --}}
                     @if (request()->routeIs('listings.index'))

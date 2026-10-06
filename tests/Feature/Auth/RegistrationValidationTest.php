@@ -85,8 +85,7 @@ class RegistrationValidationTest extends TestCase
         foreach (['/register' => 'register', '/login' => 'login'] as $url => $name) {
             $this->get($url)
                 ->assertOk()
-                ->assertSee('data-validate="'.$name.'" novalidate', false)
-                ->assertSee('auth-validation', false);
+                ->assertSee('data-validate="'.$name.'" novalidate', false);
         }
 
         $this->get('/register')->assertSee(['Your password must have:', 'Suggest a strong password']);

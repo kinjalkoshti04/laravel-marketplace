@@ -68,4 +68,11 @@ Design switched to plain Bootstrap 5 (user asked for a simple, normal Bootstrap 
 - Demo images are plain grey placeholders with the title
 - jQuery Validation uses `is-invalid` / `invalid-feedback`; re-validates flagged fields on `input` (paste/autofill)
 
+Validation on every form (jQuery + Laravel):
+- `resources/js/form-validation.js` (imported in app.js) validates every `form[data-validate]`; rules from HTML attributes + `data-rule-*` (strongpassword, phone, equalto, filetypes, maxfilesize, photolimit, notlessthan), messages via `data-msg-*`
+- Forms: search, filters, login, register, forgot/reset/confirm password, profile, update password, delete account, listing create/edit
+- `x-password-help` component (checklist, strength, suggest) on register, reset password, update password
+- Server: `BrowseFilterRequest` (q, prices, max >= min, sort) redirects to the same page with errors; profile rules match register (min name, lowercase email)
+- `FormValidationTest`; 72 PHPUnit tests; browser test of all forms 41/41
+
 Remaining (optional): push to GitHub when the user asks (no remote yet).

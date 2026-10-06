@@ -6,19 +6,19 @@
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}">
+    <form method="post" action="{{ route('profile.update') }}" data-validate="profile" novalidate>
         @csrf
         @method('patch')
 
         <div class="mb-3">
             <x-input-label for="name" value="Name" />
-            <x-text-input id="name" name="name" type="text" :value="old('name', $user->name)" required autofocus autocomplete="name" />
+            <x-text-input id="name" name="name" type="text" :value="old('name', $user->name)" required minlength="2" maxlength="255" autofocus autocomplete="name" />
             <x-input-error :messages="$errors->get('name')" />
         </div>
 
         <div class="mb-3">
             <x-input-label for="email" value="Email" />
-            <x-text-input id="email" name="email" type="email" :value="old('email', $user->email)" required autocomplete="username" />
+            <x-text-input id="email" name="email" type="email" :value="old('email', $user->email)" required maxlength="255" autocomplete="username" />
             <x-input-error :messages="$errors->get('email')" />
 
             @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
@@ -35,7 +35,7 @@
 
         <div class="mb-3">
             <x-input-label for="phone" value="Phone (optional)" />
-            <x-text-input id="phone" type="tel" name="phone" :value="old('phone', $user->phone)" autocomplete="tel" placeholder="e.g. 9876543210" />
+            <x-text-input id="phone" type="tel" name="phone" :value="old('phone', $user->phone)" data-rule-phone="true" autocomplete="tel" placeholder="e.g. 9876543210" />
             <div class="form-text">Shown to logged-in buyers on your ads.</div>
             <x-input-error :messages="$errors->get('phone')" />
         </div>

@@ -10,7 +10,7 @@
 
     <div class="modal fade" id="confirmUserDeletion" tabindex="-1" aria-labelledby="confirmUserDeletionLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <form method="post" action="{{ route('profile.destroy') }}" class="modal-content">
+            <form method="post" action="{{ route('profile.destroy') }}" class="modal-content" data-validate="delete-account" novalidate>
                 @csrf
                 @method('delete')
 
@@ -22,7 +22,7 @@
                 <div class="modal-body">
                     <p class="small text-muted">Please enter your password to confirm you would like to permanently delete your account.</p>
                     <x-input-label for="delete_password" value="Password" class="visually-hidden" />
-                    <x-text-input id="delete_password" name="password" type="password" placeholder="Password" />
+                    <x-text-input id="delete_password" name="password" type="password" placeholder="Password" required data-msg-required="Please enter your password to confirm." />
                     <x-input-error :messages="$errors->userDeletion->get('password')" />
                 </div>
 

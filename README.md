@@ -18,7 +18,7 @@ Built with **Laravel 12**, **Breeze** auth (Blade views), **Bootstrap 5**, jQuer
 | City + category-wise listings | `/city/{city}/{category}`, e.g. `/city/mumbai/vehicles` |
 | Listing detail page | `/listing/{slug}` |
 
-Login and register are validated in the browser with **jQuery Validation** (no browser popups) and again by **Laravel** on the server. Passwords must be strong (8+ characters, upper and lowercase letters, a number and a symbol), and the register form shows a live checklist, a strength meter and a "suggest a strong password" button.
+Every form (search, filters, login, register, password forms, profile, post/edit ad) is validated in the browser with **jQuery Validation** (no browser popups) and again by **Laravel** on the server. Passwords must be strong (8+ characters, upper and lowercase letters, a number and a symbol), and the register form shows a live checklist, a strength meter and a "suggest a strong password" button.
 
 Extras: My Listings (edit, mark as sold or inactive, delete), dashboard stats, similar ads, view counter, photo gallery, Indian price formatting (₹ 5,00,000), mobile-friendly layout, 46 feature tests.
 

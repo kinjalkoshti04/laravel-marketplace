@@ -21,3 +21,8 @@
     object-fit: cover;
     cursor: pointer;
 }
+
+/* jQuery Validation errors placed away from their input (radios, input groups). */
+.invalid-feedback.js-error {
+    display: block;
+}

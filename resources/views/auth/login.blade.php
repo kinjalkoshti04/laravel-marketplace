@@ -9,7 +9,7 @@
 
         <div class="mb-3">
             <x-input-label for="email" value="Email" />
-            <x-text-input id="email" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
+            <x-text-input id="email" type="email" name="email" :value="old('email')" required maxlength="255" autofocus autocomplete="username" />
             <x-input-error :messages="$errors->get('email')" />
         </div>
 
@@ -35,6 +35,4 @@
 
     <hr>
     <p class="text-center small mb-0">Don't have an account? <a href="{{ route('register') }}">Register</a></p>
-
-    @vite('resources/js/auth-validation.js')
 </x-guest-layout>

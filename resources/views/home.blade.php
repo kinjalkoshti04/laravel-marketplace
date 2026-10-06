@@ -3,7 +3,7 @@
 
     <div class="container">
         {{-- Search --}}
-        <form method="GET" action="{{ route('listings.index') }}" class="card card-body mb-4">
+        <form method="GET" action="{{ route('listings.index') }}" class="card card-body mb-4" data-validate="search" novalidate>
             <div class="row g-2">
                 <div class="col-md-3">
                     <select name="city" class="form-select" aria-label="City">
@@ -14,7 +14,7 @@
                     </select>
                 </div>
                 <div class="col-md-7">
-                    <input name="q" class="form-control" placeholder="Search cars, mobiles, jobs and more..." aria-label="Search">
+                    <input name="q" class="form-control" maxlength="100" placeholder="Search cars, mobiles, jobs and more..." aria-label="Search">
                 </div>
                 <div class="col-md-2 d-grid">
                     <button class="btn btn-primary">Search</button>

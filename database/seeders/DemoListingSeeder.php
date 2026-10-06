@@ -157,19 +157,6 @@ class DemoListingSeeder extends Seeder
         ],
     ];
 
-    /** Background colour per top-level category slug (RGB). */
-    private const COLORS = [
-        'mobiles' => [59, 130, 246],
-        'vehicles' => [239, 68, 68],
-        'property' => [16, 185, 129],
-        'electronics-appliances' => [139, 92, 246],
-        'furniture' => [180, 120, 60],
-        'fashion' => [236, 72, 153],
-        'jobs' => [14, 116, 144],
-        'services' => [245, 158, 11],
-        'pets' => [101, 163, 13],
-    ];
-
     private ?string $font = null;
 
     public function run(): void
@@ -224,7 +211,7 @@ class DemoListingSeeder extends Seeder
                 $imageCount = mt_rand(1, 3);
                 for ($i = 0; $i < $imageCount; $i++) {
                     $listing->images()->create([
-                        'path' => $this->makeImage($listing, $sub, $i),
+                        'path' => $this->makeImage($listing, $i),
                         'sort_order' => $i,
                         'is_primary' => $i === 0,
                     ]);
@@ -261,31 +248,24 @@ class DemoListingSeeder extends Seeder
     }
 
     /**
-     * Draws a simple 800x600 placeholder: category colour, subcategory label and title.
+     * Draws a plain 800x600 placeholder with the ad title in the middle.
      */
-    private function makeImage(Listing $listing, Category $sub, int $index): string
+    private function makeImage(Listing $listing, int $index): string
     {
-        [$r, $g, $b] = self::COLORS[$sub->parent->slug] ?? [100, 116, 139];
-        // Each extra photo of the same listing is a bit darker so they look different.
-        $shade = 1 - $index * 0.15;
+        // Extra photos of the same ad get a slightly darker background.
+        $shade = 233 - $index * 12;
 
         $img = imagecreatetruecolor(800, 600);
-        for ($y = 0; $y < 600; $y++) {
-            $f = $shade * (1 - $y / 1500);
-            imageline($img, 0, $y, 800, $y, imagecolorallocate($img, (int) ($r * $f), (int) ($g * $f), (int) ($b * $f)));
-        }
+        imagefill($img, 0, 0, imagecolorallocate($img, $shade, $shade + 3, $shade + 6));
+        $textColor = imagecolorallocate($img, 73, 80, 87);
 
-        $white = imagecolorallocate($img, 255, 255, 255);
-        $faded = imagecolorallocatealpha($img, 255, 255, 255, 60);
-        imagefilledellipse($img, 680, 120, 260, 260, imagecolorallocatealpha($img, 255, 255, 255, 110));
-
-        $this->text($img, strtoupper($sub->name), 22, 50, 90, $faded);
-        $y = 300;
-        foreach (explode("\n", wordwrap($listing->title, 24)) as $line) {
-            $this->text($img, $line, 40, 50, $y, $white);
-            $y += 60;
+        $lines = explode("
+", wordwrap($listing->title, 26));
+        $y = 300 - (count($lines) - 1) * 25;
+        foreach ($lines as $line) {
+            $this->centeredText($img, $line, 30, $y, $textColor);
+            $y += 50;
         }
-        $this->text($img, 'Photo '.($index + 1), 18, 50, 560, $faded);
 
         $path = self::IMAGE_DIR."/{$listing->id}-{$index}.jpg";
         ob_start();
@@ -296,16 +276,17 @@ class DemoListingSeeder extends Seeder
         return $path;
     }
 
-    private function text(\GdImage $img, string $text, int $size, int $x, int $y, int $color): void
+    private function centeredText(\GdImage $img, string $text, int $size, int $y, int $color): void
     {
         if ($this->font) {
-            imagettftext($img, $size, 0, $x, $y, $color, $this->font, $text);
+            $box = imagettfbbox($size, 0, $this->font, $text);
+            imagettftext($img, $size, 0, (int) ((800 - ($box[2] - $box[0])) / 2), $y, $color, $this->font, $text);
 
             return;
         }
 
         // No TTF font on this machine: fall back to GD's built-in bitmap font.
-        imagestring($img, 5, $x, $y - 15, $text, $color);
+        imagestring($img, 5, (int) ((800 - strlen($text) * imagefontwidth(5)) / 2), $y - 15, $text, $color);
     }
 
     private function findFont(): ?string

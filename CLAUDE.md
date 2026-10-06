@@ -75,4 +75,4 @@ Validation on every form (jQuery + Laravel):
 - Server: `BrowseFilterRequest` (q, prices, max >= min, sort) redirects to the same page with errors; profile rules match register (min name, lowercase email)
 - `FormValidationTest`; 72 PHPUnit tests; browser test of all forms 41/41
 
-Remaining (optional): push to GitHub when the user asks (no remote yet).
+GitHub: https://github.com/kinjalkoshti04/laravel-marketplace (public, branch `main`).

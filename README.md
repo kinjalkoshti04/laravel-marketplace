@@ -27,7 +27,7 @@ Extras: My Listings (edit, mark as sold or inactive, delete), dashboard stats, s
 Requirements: PHP 8.2+ (with `gd`, `pdo_mysql`, `fileinfo`), Composer, Node 18+, MySQL/MariaDB (e.g. XAMPP).
 
 ```bash
-git clone <repo-url> bazaar && cd bazaar
+git clone https://github.com/kinjalkoshti04/laravel-marketplace.git && cd laravel-marketplace
 composer install
 npm install && npm run build
 

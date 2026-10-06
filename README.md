@@ -39,6 +39,7 @@ Create an empty database called `laravel_marketplace`, then check the `DB_*` val
 
 ```bash
 php artisan migrate --seed   # tables + categories, locations, 5 demo users, 63 demo listings with photos
+                             # (photos come from database/seeders/images/<subcategory>/, public domain, see CREDITS.md there)
 php artisan storage:link     # makes uploaded photos public
 php artisan serve
 ```

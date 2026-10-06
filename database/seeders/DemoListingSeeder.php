@@ -15,6 +15,12 @@ class DemoListingSeeder extends Seeder
     private const IMAGE_DIR = 'listings/demo';
 
     /**
+     * Real photos per subcategory: database/seeders/images/<subcategory-slug>/*.jpg
+     * (see CREDITS.md there). Without photos a grey placeholder is generated.
+     */
+    private const PHOTO_SOURCE = __DIR__.'/images';
+
+    /**
      * Demo sellers. The first one is the account mentioned in the README.
      */
     private const USERS = [
@@ -180,7 +186,9 @@ class DemoListingSeeder extends Seeder
             $sub = $subcategories->get($subSlug)
                 ?? throw new \RuntimeException("Unknown subcategory [{$subSlug}], run CategorySeeder first.");
 
-            foreach ($rows as [$title, $min, $max, $description]) {
+            $photos = $this->photosFor($subSlug);
+
+            foreach ($rows as $row => [$title, $min, $max, $description]) {
                 $city = $weightedCities[mt_rand(0, $weightedCities->count() - 1)];
                 /** @var Area $area */
                 $area = $city->areas[mt_rand(0, $city->areas->count() - 1)];
@@ -208,9 +216,15 @@ class DemoListingSeeder extends Seeder
                 ])->save();
 
                 $imageCount = mt_rand(1, 3);
+                if ($photos) {
+                    $imageCount = min($imageCount, count($photos));
+                }
                 for ($i = 0; $i < $imageCount; $i++) {
                     $listing->images()->create([
-                        'path' => $this->makeImage($listing, $i),
+                        // Each ad of the same subcategory starts at a different photo.
+                        'path' => $photos
+                            ? $this->copyPhoto($listing, $photos[($row + $i) % count($photos)], $i)
+                            : $this->makeImage($listing, $i),
                         'sort_order' => $i,
                         'is_primary' => $i === 0,
                     ]);
@@ -244,6 +258,28 @@ class DemoListingSeeder extends Seeder
         };
 
         return (int) (round($price / $step) * $step);
+    }
+
+    /**
+     * @return list<string> photo files for the subcategory, sorted by name
+     */
+    private function photosFor(string $subSlug): array
+    {
+        $files = array_filter(
+            glob(self::PHOTO_SOURCE."/{$subSlug}/*") ?: [],
+            fn ($f) => in_array(strtolower(pathinfo($f, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png', 'webp'], true),
+        );
+        sort($files, SORT_NATURAL);
+
+        return $files;
+    }
+
+    private function copyPhoto(Listing $listing, string $file, int $index): string
+    {
+        $path = self::IMAGE_DIR."/{$listing->id}-{$index}.".strtolower(pathinfo($file, PATHINFO_EXTENSION));
+        Storage::disk('public')->put($path, file_get_contents($file));
+
+        return $path;
     }
 
     /**

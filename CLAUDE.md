@@ -65,7 +65,7 @@ Final pass done:
 Design switched to plain Bootstrap 5 (user asked for a simple, normal Bootstrap look):
 - Tailwind removed; `resources/css/app.css` imports Bootstrap; `Paginator::useBootstrapFive()`
 - Breeze components rewritten for Bootstrap (dropdown/modal/nav-link components deleted; navbar collapse + dropdown + delete-account modal use Bootstrap JS)
-- Demo images are plain grey placeholders with the title
+- Demo photos: 93 public-domain photos (CC0/PDM via Openverse, hand-picked, 800x600) in `database/seeders/images/<subcategory>/` + CREDITS.md; DemoListingSeeder copies them, falls back to grey placeholders if a folder is empty
 - jQuery Validation uses `is-invalid` / `invalid-feedback`; re-validates flagged fields on `input` (paste/autofill)
 
 Validation on every form (jQuery + Laravel):

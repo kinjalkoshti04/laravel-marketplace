@@ -74,6 +74,21 @@ class ManageListingsTest extends TestCase
             ->assertSessionHasErrors('area_id');
     }
 
+    public function test_form_asks_to_reselect_photos_after_a_validation_error(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->get(route('my-listings.create'))->assertDontSee('Please select your photos again');
+
+        $this->actingAs($user)
+            ->from(route('my-listings.create'))
+            ->post(route('my-listings.store'), $this->validData(['description' => 'too short']))
+            ->assertRedirect(route('my-listings.create'));
+
+        $this->actingAs($user)->get(route('my-listings.create'))
+            ->assertSee('Please select your photos again');
+    }
+
     public function test_required_fields_are_validated(): void
     {
         $this->actingAs(User::factory()->create())

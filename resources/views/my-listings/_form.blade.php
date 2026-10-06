@@ -19,7 +19,10 @@
 <div x-data="listingForm({ urls: @js($urls), selected: @js($selected) })">
 
     @if ($errors->any())
-        <div class="alert alert-danger">Please fix the errors below.</div>
+        <div class="alert alert-danger">
+            Please fix the errors below.
+            <strong>If you selected photos, please choose them again</strong> &ndash; browsers clear the photo field when a form has errors.
+        </div>
     @endif
 
     <h5 class="mb-3">Ad details</h5>
@@ -150,7 +153,10 @@
     <div class="mb-3">
         <label for="images" class="form-label">{{ $listing->exists ? 'Add photos' : 'Upload photos' }}</label>
         <input id="images" name="images[]" type="file" multiple accept="image/jpeg,image/png,image/webp"
-               class="form-control" @change="previewImages($event)">
+               class="form-control @if ($errors->any()) border-warning @endif" @change="previewImages($event)">
+        @if ($errors->any())
+            <div class="form-text text-warning-emphasis fw-semibold" id="reselect-photos">Please select your photos again before saving.</div>
+        @endif
         <div class="form-text">Up to {{ \App\Http\Requests\StoreListingRequest::MAX_IMAGES }} photos in total, JPG/PNG/WebP, max 4 MB each. The first photo is the cover.</div>
         <x-input-error :messages="$errors->get('images')" />
         @foreach ($errors->get('images.*') as $messages)

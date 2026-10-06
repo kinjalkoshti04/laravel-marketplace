@@ -75,7 +75,7 @@
                             <span>{{ $listing->area->name }}, {{ $listing->city->name }}</span>
                             <span>{{ $listing->created_at->format('d M Y') }}</span>
                         </div>
-                        <div class="small text-muted mt-1">{{ number_format($listing->views_count) }} views &middot; Ad ID {{ $listing->id }}</div>
+                        <div class="small text-muted mt-1">Ad ID {{ $listing->id }}</div>
                     </div>
                 </div>
 

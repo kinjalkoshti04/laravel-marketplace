@@ -32,7 +32,6 @@
                             <th>Title</th>
                             <th>Price</th>
                             <th>Status</th>
-                            <th>Views</th>
                             <th>Posted</th>
                             <th class="text-end">Actions</th>
                         </tr>
@@ -51,7 +50,6 @@
                                 </td>
                                 <td class="text-nowrap">{{ $listing->formatted_price }}</td>
                                 <td><x-status-badge :status="$listing->status" /></td>
-                                <td>{{ $listing->views_count }}</td>
                                 <td class="text-nowrap small">{{ $listing->created_at->format('d M Y') }}</td>
                                 <td class="text-end text-nowrap">
                                     <a href="{{ route('my-listings.edit', $listing) }}" class="btn btn-sm btn-outline-primary">Edit</a>

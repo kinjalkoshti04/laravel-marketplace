@@ -46,7 +46,7 @@ Day 2 done:
 - `StoreListingRequest` / `UpdateListingRequest`: each id must belong to its parent (subcategory→category, state→country, city→state, area→city); max 5 photos counting existing ones
 - My Listings (`/dashboard/listings`, `MyListingController`, `ListingPolicy`): status tabs, edit (status, remove photos), soft delete
 - Browse (`BrowseController`, one view for /listings, /category, /city, /city/{city}/{category}): search, price filter, sort, category/city facets with counts
-- Detail page (`ListingController@show`): gallery, seller, phone for logged-in users, similar ads, view count once per session; inactive ads 404 for non-owners
+- Detail page (`ListingController@show`): gallery, seller, phone for logged-in users, similar ads; inactive ads 404 for non-owners
 - Dashboard with stats; prices use Indian digit grouping (`Listing::indianNumber`, no intl extension here)
 - `ListingFactory` (needs Category + Location seeders); 46 tests passing; checked in a real browser with puppeteer
 

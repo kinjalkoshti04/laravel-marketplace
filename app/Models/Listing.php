@@ -34,7 +34,6 @@ class Listing extends Model
         return [
             'price' => 'decimal:2',
             'is_negotiable' => 'boolean',
-            'views_count' => 'integer',
         ];
     }
 

@@ -203,7 +203,6 @@ class DemoListingSeeder extends Seeder
                 ]);
 
                 $listing->forceFill([
-                    'views_count' => mt_rand(5, 900),
                     'created_at' => $createdAt,
                     'updated_at' => $createdAt,
                 ])->save();

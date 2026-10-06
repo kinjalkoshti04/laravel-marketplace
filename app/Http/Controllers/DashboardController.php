@@ -14,7 +14,7 @@ class DashboardController extends Controller
         $stats = [
             'Active ads' => (clone $listings)->active()->count(),
             'Sold' => (clone $listings)->where('status', 'sold')->count(),
-            'Total views' => (int) (clone $listings)->sum('views_count'),
+            'Total ads' => (clone $listings)->count(),
         ];
 
         $recent = (clone $listings)->withCardData()->latest()->take(4)->get();

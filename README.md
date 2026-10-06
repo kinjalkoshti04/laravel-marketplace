@@ -20,7 +20,7 @@ Built with **Laravel 12**, **Breeze** auth (Blade views), **Bootstrap 5**, jQuer
 
 Every form (search, filters, login, register, password forms, profile, post/edit ad) is validated in the browser with **jQuery Validation** (no browser popups) and again by **Laravel** on the server. Passwords must be strong (8+ characters, upper and lowercase letters, a number and a symbol), and the register form shows a live checklist, a strength meter and a "suggest a strong password" button.
 
-Extras: My Listings (edit, mark as sold or inactive, delete), dashboard stats, similar ads, view counter, photo gallery, Indian price formatting (₹ 5,00,000), mobile-friendly layout, 46 feature tests.
+Extras: My Listings (edit, mark as sold or inactive, delete), dashboard stats, similar ads, photo gallery, Indian price formatting (₹ 5,00,000), mobile-friendly layout, 46 feature tests.
 
 ## Setup
 
@@ -151,7 +151,6 @@ erDiagram
         decimal price
         boolean is_negotiable
         enum status "active | sold | inactive"
-        int views_count
         timestamp deleted_at "soft deletes"
     }
     listing_images {

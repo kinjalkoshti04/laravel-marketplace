@@ -80,7 +80,7 @@ class BrowseListingsTest extends TestCase
         $this->get('/listing/nope-123456')->assertNotFound();
     }
 
-    public function test_detail_page_shows_listing_and_counts_views_once(): void
+    public function test_detail_page_shows_listing(): void
     {
         $listing = Listing::where('title', 'Swift in Mumbai')->firstOrFail();
         $listing->user->update(['phone' => '9876543210']);
@@ -88,10 +88,8 @@ class BrowseListingsTest extends TestCase
         $this->get(route('listings.show', $listing))->assertOk()
             ->assertDontSee('9876543210')
             ->assertSee(['Swift in Mumbai', 'Cars', 'Mumbai', $listing->user->name, '₹ 5,00,000'])
-            ->assertSee('Log in to see phone number');
-        $this->get(route('listings.show', $listing))->assertOk();
-
-        $this->assertSame(1, $listing->fresh()->views_count);
+            ->assertSee('Log in to see phone number')
+            ->assertDontSee('views');
     }
 
     public function test_guest_returns_to_the_ad_with_phone_shown_after_login(): void

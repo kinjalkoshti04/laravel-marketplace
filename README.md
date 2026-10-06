@@ -2,7 +2,7 @@
 
 A classifieds marketplace where users register, post products or services with a category and full location (country → state → city → area), and browse listings by category, by city, or by city + category.
 
-Built with **Laravel 12**, **Breeze (Blade + Tailwind + Alpine.js)** and **MySQL**.
+Built with **Laravel 12**, **Breeze** auth (Blade views), **Bootstrap 5**, jQuery Validation, a little Alpine.js and **MySQL**.
 
 ![Home page](docs/screenshots/home.png)
 

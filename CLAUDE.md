@@ -10,7 +10,7 @@ Practical assessment for a Part-Time Laravel Developer role at Honeybee Digital.
 - Listing detail page
 
 ## Stack
-Laravel 12, Breeze (Blade + Tailwind + Alpine.js), MySQL (XAMPP, db `laravel_marketplace`, user root, no password), PHP 8.2.
+Laravel 12, Breeze auth with Blade views styled in Bootstrap 5 (Tailwind removed), Alpine.js for the small dynamic parts, jQuery Validation on login/register, MySQL (XAMPP, db `laravel_marketplace`, user root, no password), PHP 8.2.
 
 ## Architecture decisions
 - `categories` table points to itself: `parent_id` NULL = category, set = subcategory.
@@ -61,5 +61,11 @@ Final pass done:
 - Deleting an account also deletes the user's photo files and upload folders (User model `deleting`/`deleted` events), soft-deleted ads included
 - Login/register: browser validation off (`novalidate`), jQuery Validation instead (`resources/js/auth-validation.js`, separate Vite entry); strong passwords via `Password::defaults()` in AppServiceProvider; live checklist, strength meter, show/hide, suggest password; `RegistrationValidationTest`
 - 65 PHPUnit tests passing (demo users keep `password`: login does not check strength)
+
+Design switched to plain Bootstrap 5 (user asked for a simple, normal Bootstrap look):
+- Tailwind removed; `resources/css/app.css` imports Bootstrap; `Paginator::useBootstrapFive()`
+- Breeze components rewritten for Bootstrap (dropdown/modal/nav-link components deleted; navbar collapse + dropdown + delete-account modal use Bootstrap JS)
+- Demo images are plain grey placeholders with the title
+- jQuery Validation uses `is-invalid` / `invalid-feedback`; re-validates flagged fields on `input` (paste/autofill)
 
 Remaining (optional): push to GitHub when the user asks (no remote yet).

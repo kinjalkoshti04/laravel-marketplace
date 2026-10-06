@@ -21,11 +21,11 @@ export const PASSWORD_RULES = {
 const passesAll = (value) => Object.values(PASSWORD_RULES).every((test) => test(value));
 
 const STRENGTH = [
-    { label: 'Too weak', width: '10%', color: 'bg-red-500' },
-    { label: 'Weak', width: '25%', color: 'bg-red-500' },
-    { label: 'Fair', width: '50%', color: 'bg-amber-500' },
-    { label: 'Good', width: '75%', color: 'bg-lime-500' },
-    { label: 'Strong', width: '100%', color: 'bg-green-600' },
+    { label: 'Too weak', width: '10%', color: 'bg-danger' },
+    { label: 'Weak', width: '25%', color: 'bg-danger' },
+    { label: 'Fair', width: '50%', color: 'bg-warning' },
+    { label: 'Good', width: '75%', color: 'bg-info' },
+    { label: 'Strong', width: '100%', color: 'bg-success' },
 ];
 
 function strengthOf(value) {
@@ -60,13 +60,14 @@ $.validator.addMethod(
     'Please enter a valid phone number.',
 );
 
-const INVALID = 'border-red-500 focus:border-red-500 focus:ring-red-500';
+const INVALID = 'is-invalid';
 
 $.validator.setDefaults({
-    errorElement: 'p',
-    errorClass: 'js-error',
+    errorElement: 'div',
+    errorClass: 'invalid-feedback',
+    // Bootstrap shows .invalid-feedback when it directly follows an .is-invalid input.
     errorPlacement(error, element) {
-        error.addClass('mt-2 text-sm text-red-600').insertAfter(element);
+        error.insertAfter(element);
     },
     highlight(element) {
         $(element).addClass(INVALID).attr('aria-invalid', 'true');
@@ -84,13 +85,20 @@ $(function () {
     // Fields with a server-side (Laravel) error get the same red border; the error
     // is removed as soon as the user edits that field.
     $('form[data-validate] [data-server-error]').each(function () {
-        $(this).closest('div').find('input').first().addClass(INVALID);
+        $(this).parent().find('input').first().addClass(INVALID);
     });
     $('form[data-validate]').on('input change', 'input', function () {
         const $serverError = $(this).closest('div').find('[data-server-error]');
         if ($serverError.length) {
             $serverError.remove();
             $(this).removeClass(INVALID);
+        }
+
+        // jQuery Validation re-checks on keyup only, so a value that is pasted or autofilled
+        // would keep its old error until blur (and the layout jump can swallow the submit click).
+        const validator = $(this.form).data('validator');
+        if (validator && (this.name in validator.submitted || this.name in validator.invalid)) {
+            validator.element(this);
         }
     });
 
@@ -141,17 +149,17 @@ $(function () {
         $('#password-help [data-rule]').each(function () {
             const met = PASSWORD_RULES[$(this).data('rule')](value);
             $(this)
-                .toggleClass('text-green-700', met)
-                .toggleClass('text-gray-500', !met)
+                .toggleClass('text-success', met)
+                .toggleClass('text-muted', !met)
                 .find('[data-icon]')
                 .text(met ? '✓' : '○');
         });
 
         const level = strengthOf(value);
-        $meter.toggleClass('hidden', level === null);
+        $meter.toggleClass('d-none', level === null);
         if (level !== null) {
             const s = STRENGTH[level];
-            $meter.find('[data-bar]').attr('class', `h-1.5 rounded-full transition-all ${s.color}`).css('width', s.width);
+            $meter.find('[data-bar]').attr('class', `progress-bar ${s.color}`).css('width', s.width);
             $meter.find('[data-label]').text(s.label);
         }
 
@@ -163,20 +171,22 @@ $(function () {
     refreshHelp();
 
     /* Show / hide both password fields */
-    $('#toggle-password').on('click', function () {
+    $('#toggle-password').on('click', function (event) {
+        event.preventDefault();
         const show = $password.attr('type') === 'password';
         $password.add($confirm).attr('type', show ? 'text' : 'password');
         $(this).text(show ? 'Hide' : 'Show').attr('aria-pressed', show);
     });
 
     /* Suggest a strong password: fills both fields and shows it so it can be saved */
-    $('#suggest-password').on('click', function () {
+    $('#suggest-password').on('click', function (event) {
+        event.preventDefault();
         const suggestion = suggestPassword();
         $password.val(suggestion);
         $confirm.val(suggestion);
         $password.add($confirm).attr('type', 'text');
         $('#toggle-password').text('Hide').attr('aria-pressed', true);
-        $('#suggested-note').removeClass('hidden');
+        $('#suggested-note').removeClass('d-none');
         refreshHelp();
         $password.valid();
         $confirm.valid();

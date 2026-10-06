@@ -1,7 +1,23 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'bootstrap/dist/css/bootstrap.min.css';
 
 [x-cloak] {
     display: none !important;
+}
+
+.listing-thumb {
+    height: 170px;
+    object-fit: cover;
+}
+
+.gallery-main {
+    height: 420px;
+    object-fit: contain;
+    background: #f1f1f1;
+}
+
+.gallery-thumb {
+    width: 80px;
+    height: 60px;
+    object-fit: cover;
+    cursor: pointer;
 }

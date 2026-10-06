@@ -1,69 +1,68 @@
 <x-app-layout>
     <x-slot:title>Buy and sell near you</x-slot:title>
 
-    {{-- Hero --}}
-    <section class="bg-indigo-700">
-        <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-            <h1 class="text-3xl font-bold text-white sm:text-4xl">Buy and sell anything near you</h1>
-            <p class="mt-2 text-indigo-100">Mobiles, vehicles, property, jobs, services and more across India.</p>
-
-            <form method="GET" action="{{ route('listings.index') }}" class="mt-6 flex max-w-3xl flex-col gap-2 sm:flex-row">
-                <select name="city" aria-label="City" class="rounded-md border-0 text-sm sm:w-48">
-                    <option value="">All cities</option>
-                    @foreach ($allCities as $c)
-                        <option value="{{ $c->slug }}">{{ $c->name }}</option>
-                    @endforeach
-                </select>
-                <input name="q" aria-label="Search" placeholder="Find cars, mobiles, jobs and more…" class="flex-1 rounded-md border-0 text-sm">
-                <button class="rounded-md bg-amber-400 px-6 py-2 text-sm font-semibold text-gray-900 hover:bg-amber-300">Search</button>
-            </form>
-        </div>
-    </section>
-
-    <div class="mx-auto max-w-7xl space-y-10 px-4 py-8 sm:px-6 lg:px-8">
-        {{-- Categories --}}
-        <section>
-            <h2 class="mb-4 text-xl font-semibold text-gray-900">Browse categories</h2>
-            <div class="grid grid-cols-3 gap-3 sm:grid-cols-5 lg:grid-cols-9">
-                @foreach ($categories as $category)
-                    <a href="{{ route('browse.category', $category) }}"
-                       class="flex flex-col items-center rounded-lg border border-gray-200 bg-white p-3 text-center transition hover:border-indigo-400 hover:shadow-sm">
-                        <span class="text-3xl">{{ $category->icon }}</span>
-                        <span class="mt-2 text-xs font-medium text-gray-700">{{ $category->name }}</span>
-                    </a>
-                @endforeach
-            </div>
-        </section>
-
-        {{-- Popular cities --}}
-        <section>
-            <h2 class="mb-4 text-xl font-semibold text-gray-900">Popular cities</h2>
-            <div class="flex flex-wrap gap-2">
-                @foreach ($popularCities as $city)
-                    <a href="{{ route('browse.city', $city) }}"
-                       class="rounded-full border border-gray-300 bg-white px-4 py-1.5 text-sm text-gray-700 transition hover:border-indigo-500 hover:text-indigo-600">
-                        {{ $city->name }}
-                    </a>
-                @endforeach
-            </div>
-        </section>
-
-        {{-- Latest listings --}}
-        <section>
-            <div class="mb-4 flex items-center justify-between">
-                <h2 class="text-xl font-semibold text-gray-900">Fresh recommendations</h2>
-                <a href="{{ route('listings.index') }}" class="text-sm font-medium text-indigo-600 hover:underline">View all</a>
-            </div>
-
-            @if ($latestListings->isEmpty())
-                <p class="rounded-lg bg-white p-8 text-center text-gray-500">No listings yet. Be the first to post an ad!</p>
-            @else
-                <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-                    @foreach ($latestListings as $listing)
-                        <x-listing-card :listing="$listing" />
-                    @endforeach
+    <div class="container">
+        {{-- Search --}}
+        <form method="GET" action="{{ route('listings.index') }}" class="card card-body mb-4">
+            <div class="row g-2">
+                <div class="col-md-3">
+                    <select name="city" class="form-select" aria-label="City">
+                        <option value="">All cities</option>
+                        @foreach ($allCities as $c)
+                            <option value="{{ $c->slug }}">{{ $c->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
-            @endif
-        </section>
+                <div class="col-md-7">
+                    <input name="q" class="form-control" placeholder="Search cars, mobiles, jobs and more..." aria-label="Search">
+                </div>
+                <div class="col-md-2 d-grid">
+                    <button class="btn btn-primary">Search</button>
+                </div>
+            </div>
+        </form>
+
+        <div class="row">
+            {{-- Categories + cities --}}
+            <div class="col-lg-3 mb-4">
+                <div class="card mb-4">
+                    <div class="card-header fw-semibold">Categories</div>
+                    <div class="list-group list-group-flush">
+                        @foreach ($categories as $category)
+                            <a href="{{ route('browse.category', $category) }}" class="list-group-item list-group-item-action">{{ $category->name }}</a>
+                        @endforeach
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header fw-semibold">Popular cities</div>
+                    <div class="list-group list-group-flush">
+                        @foreach ($popularCities as $city)
+                            <a href="{{ route('browse.city', $city) }}" class="list-group-item list-group-item-action">{{ $city->name }}</a>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+
+            {{-- Latest ads --}}
+            <div class="col-lg-9">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">Latest ads</h5>
+                    <a href="{{ route('listings.index') }}" class="small">View all</a>
+                </div>
+
+                @if ($latestListings->isEmpty())
+                    <div class="alert alert-info">No listings yet. Be the first to post an ad!</div>
+                @else
+                    <div class="row row-cols-2 row-cols-md-3 g-3">
+                        @foreach ($latestListings as $listing)
+                            <div class="col">
+                                <x-listing-card :listing="$listing" />
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
+        </div>
     </div>
 </x-app-layout>

@@ -2,22 +2,23 @@
     <x-slot:title>Post an ad</x-slot:title>
 
     <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-gray-800">Post an ad</h2>
+        <h4 class="mb-0">Post an ad</h4>
     </x-slot>
 
-    <div class="py-8">
-        <div class="mx-auto max-w-3xl sm:px-6 lg:px-8">
-            <form method="POST" action="{{ route('my-listings.store') }}" enctype="multipart/form-data"
-                  class="bg-white p-6 shadow-sm sm:rounded-lg">
-                @csrf
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <form method="POST" action="{{ route('my-listings.store') }}" enctype="multipart/form-data" class="card card-body" id="listing-form">
+                    @csrf
 
-                @include('my-listings._form')
+                    @include('my-listings._form')
 
-                <div class="mt-8 flex items-center justify-end gap-4 border-t border-gray-200 pt-6">
-                    <a href="{{ route('my-listings.index') }}" class="text-sm text-gray-600 hover:text-gray-900">Cancel</a>
-                    <x-primary-button>Post ad</x-primary-button>
-                </div>
-            </form>
+                    <div class="d-flex justify-content-end gap-2 border-top pt-3 mt-3">
+                        <a href="{{ route('my-listings.index') }}" class="btn btn-outline-secondary">Cancel</a>
+                        <x-primary-button>Post ad</x-primary-button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </x-app-layout>

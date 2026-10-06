@@ -1,50 +1,40 @@
 <x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+    <h5 class="mb-3">Log in</h5>
+
+    <x-auth-session-status class="mb-3" :status="session('status')" />
 
     {{-- novalidate: jQuery Validation shows the messages instead of the browser popups --}}
     <form method="POST" action="{{ route('login') }}" data-validate="login" novalidate>
         @csrf
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        <div class="mb-3">
+            <x-input-label for="email" value="Email" />
+            <x-text-input id="email" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
+            <x-input-error :messages="$errors->get('email')" />
         </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+        <div class="mb-3">
+            <x-input-label for="password" value="Password" />
+            <x-text-input id="password" type="password" name="password" required autocomplete="current-password" />
+            <x-input-error :messages="$errors->get('password')" />
         </div>
 
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-            </label>
+        <div class="mb-3 form-check">
+            <input id="remember_me" type="checkbox" class="form-check-input" name="remember">
+            <label for="remember_me" class="form-check-label">Remember me</label>
         </div>
 
-        <div class="flex items-center justify-end mt-4">
+        <div class="d-flex justify-content-between align-items-center">
             @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
+                <a class="small" href="{{ route('password.request') }}">Forgot your password?</a>
             @endif
 
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
+            <x-primary-button>Log in</x-primary-button>
         </div>
     </form>
+
+    <hr>
+    <p class="text-center small mb-0">Don't have an account? <a href="{{ route('register') }}">Register</a></p>
 
     @vite('resources/js/auth-validation.js')
 </x-guest-layout>

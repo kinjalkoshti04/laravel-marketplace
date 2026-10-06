@@ -1,6 +1,6 @@
 {{-- Shared by /listings, /category/{slug}, /city/{slug} and /city/{city}/{category}. --}}
 @php
-    // Builds the pretty URL for a city/category combination, keeping the search term.
+    // Builds the URL for a city/category combination, keeping the search term.
     $browseUrl = function ($city, $category) {
         $query = array_filter(['q' => request('q')]);
 
@@ -17,56 +17,49 @@
 <x-app-layout>
     <x-slot:title>{{ $title }}</x-slot:title>
 
-    <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        {{-- Breadcrumbs --}}
-        <nav class="mb-3 flex flex-wrap items-center gap-1 text-sm text-gray-500">
-            <a href="{{ route('home') }}" class="hover:text-indigo-600">Home</a>
-            @if ($city)
-                <span>/</span><a href="{{ $browseUrl($city, null) }}" class="hover:text-indigo-600">{{ $city->name }}</a>
-            @endif
-            @if ($topCategory)
-                <span>/</span><a href="{{ $browseUrl($city, $topCategory) }}" class="hover:text-indigo-600">{{ $topCategory->name }}</a>
-            @endif
-            @if ($category?->isSubcategory())
-                <span>/</span><span class="text-gray-700">{{ $category->name }}</span>
-            @endif
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb small">
+                <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
+                @if ($city)
+                    <li class="breadcrumb-item"><a href="{{ $browseUrl($city, null) }}">{{ $city->name }}</a></li>
+                @endif
+                @if ($topCategory)
+                    <li class="breadcrumb-item"><a href="{{ $browseUrl($city, $topCategory) }}">{{ $topCategory->name }}</a></li>
+                @endif
+                @if ($category?->isSubcategory())
+                    <li class="breadcrumb-item active" aria-current="page">{{ $category->name }}</li>
+                @endif
+            </ol>
         </nav>
 
-        <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
-            <div>
-                <h1 class="text-2xl font-bold text-gray-900">{{ $title }}</h1>
-                <p class="text-sm text-gray-500">{{ $listings->total() }} {{ Str::plural('ad', $listings->total()) }} found</p>
-            </div>
-        </div>
+        <h4 class="mb-0">{{ $title }}</h4>
+        <p id="result-count" class="text-muted small">{{ $listings->total() }} {{ Str::plural('ad', $listings->total()) }} found</p>
 
-        <div class="grid gap-6 lg:grid-cols-4">
-            {{-- Sidebar: filters + facets --}}
-            <aside class="space-y-6 lg:col-span-1">
-                <form method="GET" class="space-y-3 rounded-lg border border-gray-200 bg-white p-4">
-                    <div>
-                        <label for="q" class="text-sm font-medium text-gray-700">Search</label>
-                        <input id="q" name="q" value="{{ request('q') }}" placeholder="e.g. iPhone, sofa"
-                               class="mt-1 block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+        <div class="row">
+            {{-- Filters --}}
+            <div class="col-lg-3 mb-4">
+                <form method="GET" class="card card-body mb-3" id="filters">
+                    <div class="mb-2">
+                        <label for="q" class="form-label small mb-1">Search</label>
+                        <input id="q" name="q" value="{{ request('q') }}" class="form-control form-control-sm" placeholder="e.g. iPhone, sofa">
                     </div>
-                    <div>
-                        <span class="text-sm font-medium text-gray-700">Price (₹)</span>
-                        <div class="mt-1 flex gap-2">
-                            <input name="min_price" type="number" min="0" value="{{ request('min_price') }}" placeholder="Min"
-                                   class="block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                            <input name="max_price" type="number" min="0" value="{{ request('max_price') }}" placeholder="Max"
-                                   class="block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <div class="mb-2">
+                        <label class="form-label small mb-1">Price (₹)</label>
+                        <div class="input-group input-group-sm">
+                            <input name="min_price" type="number" min="0" value="{{ request('min_price') }}" class="form-control" placeholder="Min">
+                            <input name="max_price" type="number" min="0" value="{{ request('max_price') }}" class="form-control" placeholder="Max">
                         </div>
                     </div>
-                    <div>
-                        <label for="sort" class="text-sm font-medium text-gray-700">Sort by</label>
-                        <select id="sort" name="sort"
-                                class="mt-1 block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <div class="mb-3">
+                        <label for="sort" class="form-label small mb-1">Sort by</label>
+                        <select id="sort" name="sort" class="form-select form-select-sm">
                             @foreach (\App\Http\Controllers\BrowseController::SORTS as $value => $label)
                                 <option value="{{ $value }}" @selected($sort === $value)>{{ $label }}</option>
                             @endforeach
                         </select>
                     </div>
-                    {{-- Keep the ?city / ?category filters on the generic /listings page --}}
+                    {{-- Keep the ?city / ?category filters on the /listings page --}}
                     @if (request()->routeIs('listings.index'))
                         @foreach (['city', 'category'] as $keep)
                             @if (request($keep))
@@ -74,64 +67,59 @@
                             @endif
                         @endforeach
                     @endif
-                    <div class="flex gap-2">
-                        <button class="flex-1 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-700">Apply</button>
-                        <a href="{{ url()->current() }}" class="rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50">Reset</a>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary btn-sm flex-fill">Apply</button>
+                        <a href="{{ url()->current() }}" class="btn btn-outline-secondary btn-sm">Reset</a>
                     </div>
                 </form>
 
                 @if ($categoryFacets->isNotEmpty())
-                    <div class="rounded-lg border border-gray-200 bg-white p-4">
-                        <h2 class="mb-2 text-sm font-semibold text-gray-900">{{ $topCategory ? $topCategory->name : 'Categories' }}</h2>
-                        <ul class="space-y-1 text-sm">
+                    <div class="card mb-3" id="category-facets">
+                        <div class="card-header small fw-semibold">{{ $topCategory ? $topCategory->name : 'Categories' }}</div>
+                        <div class="list-group list-group-flush small">
                             @foreach ($categoryFacets as ['category' => $facet, 'count' => $count])
-                                <li>
-                                    <a href="{{ $browseUrl($city, $facet) }}"
-                                       @class(['flex justify-between rounded px-2 py-1 hover:bg-gray-50',
-                                               'bg-indigo-50 font-semibold text-indigo-700' => $category?->is($facet),
-                                               'text-gray-700' => ! $category?->is($facet)])>
-                                        <span>{{ $facet->icon }} {{ $facet->name }}</span>
-                                        <span class="text-gray-400">{{ $count }}</span>
-                                    </a>
-                                </li>
+                                <a href="{{ $browseUrl($city, $facet) }}"
+                                   class="list-group-item list-group-item-action d-flex justify-content-between @if ($category?->is($facet)) active @endif">
+                                    {{ $facet->name }}
+                                    <span>{{ $count }}</span>
+                                </a>
                             @endforeach
-                        </ul>
+                        </div>
                     </div>
                 @endif
 
                 @if ($cityFacets->isNotEmpty())
-                    <div class="rounded-lg border border-gray-200 bg-white p-4">
-                        <h2 class="mb-2 text-sm font-semibold text-gray-900">Cities</h2>
-                        <ul class="space-y-1 text-sm">
+                    <div class="card" id="city-facets">
+                        <div class="card-header small fw-semibold">Cities</div>
+                        <div class="list-group list-group-flush small">
                             @foreach ($cityFacets as ['city' => $facet, 'count' => $count])
-                                <li>
-                                    <a href="{{ $browseUrl($facet, $category) }}" class="flex justify-between rounded px-2 py-1 text-gray-700 hover:bg-gray-50">
-                                        <span>{{ $facet->name }}</span>
-                                        <span class="text-gray-400">{{ $count }}</span>
-                                    </a>
-                                </li>
+                                <a href="{{ $browseUrl($facet, $category) }}" class="list-group-item list-group-item-action d-flex justify-content-between">
+                                    {{ $facet->name }}
+                                    <span>{{ $count }}</span>
+                                </a>
                             @endforeach
-                        </ul>
+                        </div>
                     </div>
                 @endif
-            </aside>
+            </div>
 
             {{-- Results --}}
-            <section class="lg:col-span-3">
+            <div class="col-lg-9">
                 @if ($listings->isEmpty())
-                    <div class="rounded-lg bg-white p-10 text-center shadow-sm">
-                        <p class="text-gray-600">No ads match your filters.</p>
-                        <a href="{{ route('listings.index') }}" class="mt-3 inline-block text-sm font-semibold text-indigo-600 hover:underline">See all listings</a>
+                    <div class="alert alert-info">
+                        No ads match your filters. <a href="{{ route('listings.index') }}">See all listings</a>
                     </div>
                 @else
-                    <div class="grid grid-cols-2 gap-4 md:grid-cols-3">
+                    <div class="row row-cols-2 row-cols-md-3 g-3">
                         @foreach ($listings as $listing)
-                            <x-listing-card :listing="$listing" />
+                            <div class="col">
+                                <x-listing-card :listing="$listing" />
+                            </div>
                         @endforeach
                     </div>
-                    <div class="mt-6">{{ $listings->links() }}</div>
+                    <div class="mt-4">{{ $listings->links() }}</div>
                 @endif
-            </section>
+            </div>
         </div>
     </div>
 </x-app-layout>

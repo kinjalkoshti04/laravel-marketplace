@@ -40,7 +40,9 @@ return [
 
         'public' => [
             'driver' => 'local',
-            'root' => storage_path('app/public'),
+            // Shared hosting without symlinks (e.g. InfinityFree): set PUBLIC_STORAGE_IN_PUBLIC=true
+            // so uploads are saved straight into public/storage instead of using storage:link.
+            'root' => env('PUBLIC_STORAGE_IN_PUBLIC', false) ? public_path('storage') : storage_path('app/public'),
             'url' => env('APP_URL').'/storage',
             'visibility' => 'public',
             'throw' => false,

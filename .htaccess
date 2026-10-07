@@ -1,0 +1,9 @@
+# Used on shared hosting where the whole project is uploaded into the web root (e.g. InfinityFree htdocs):
+# every request is sent to the public/ folder, so .env, vendor and the code are never reachable.
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
